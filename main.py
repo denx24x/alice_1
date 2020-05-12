@@ -1,9 +1,11 @@
 from flask import Flask, request
 import json
 import os
+import pymorphy2
 
 app = Flask(__name__)
 sessionStorage = {}
+morph = pymorphy2.MorphAnalyzer()
 
 
 @app.route('/post', methods=['POST'])
@@ -38,7 +40,7 @@ def handle_dialog(req, res):
         'куплю',
         'покупаю',
         'хорошо'
-    ]:
+    ] or any([morph.parse(i)[0].normal_form in ['покупать'] for i in req['request']['original_utterance'].lower().split()]):
         res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!'
         res['response']['end_session'] = True
         return
