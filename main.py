@@ -1,15 +1,13 @@
 from flask import Flask, request
-import logging
 import json
+import os
 
 app = Flask(__name__)
-logging.basicConfig(level=logging.INFO)
 sessionStorage = {}
 
 
 @app.route('/post', methods=['POST'])
 def main():
-    logging.info(f'Request: {request.json!r}')
     response = {
         'session': request.json['session'],
         'version': request.json['version'],
@@ -18,7 +16,6 @@ def main():
         }
     }
     handle_dialog(request.json, response)
-    logging.info(f'Response:  {response!r}')
     return json.dumps(response)
 
 
@@ -68,4 +65,5 @@ def get_suggests(user_id):
 
 
 if __name__ == '__main__':
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(port=port, host='0.0.0.0', threaded=True)
